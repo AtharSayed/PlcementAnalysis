@@ -256,7 +256,6 @@ def main():
     # Set dynamic title based on program filter
     dashboard_title = get_dashboard_title(program_filter)
     st.markdown(f"<h1 class='title-text'>{dashboard_title}</h1>", unsafe_allow_html=True)
-    st.markdown(f"<h5 class='subtitle-text'>Positive insights for HR decision making</h5>", unsafe_allow_html=True)
 
     # Key Metrics - Only positive metrics
     st.markdown("### 📌 Performance Highlights")
