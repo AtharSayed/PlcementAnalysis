@@ -1,17 +1,16 @@
-# Core requirements
+# Core Framework
 streamlit==1.32.2
-pandas==2.2.1  # Updated for Python 3.13 compatibility
-numpy==2.0.0  # Newer version for Python 3.13
+
+# Data Handling
+pandas==2.2.1
+numpy==1.26.4
+
+# Plotting and Visualization
 matplotlib==3.8.3
 seaborn==0.13.2
 
-# Backend dependencies for matplotlib
-Pillow==10.2.0
-fonttools==4.51.0
-kiwisolver==1.4.5
-cycler==0.12.1
-pyparsing==3.1.2
+# File Path Utility
+pathlib  # This is built into Python 3.4+, so no need to install separately
 
-# Optional but recommended for data handling
-openpyxl==3.1.2
-python-dateutil==2.9.0.post0
+# Optional (for better logs or debugging)
+rich==14.0.0
