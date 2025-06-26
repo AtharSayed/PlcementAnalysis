@@ -9,8 +9,5 @@ numpy==1.26.4
 matplotlib==3.8.3
 seaborn==0.13.2
 
-# File Path Utility
-pathlib  # This is built into Python 3.4+, so no need to install separately
-
-# Optional (for better logs or debugging)
-rich==14.0.0
+# Optional - compatible rich version for better logs
+rich==13.7.1
