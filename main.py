@@ -308,15 +308,7 @@ def main():
             st.markdown('</div>', unsafe_allow_html=True)
 
     with col2:
-        with st.container():
-            st.markdown('<div class="plot-container"><h3>PG Semester Performance</h3>', unsafe_allow_html=True)
-            if 'PG Sem 1 Aggregate %' in filtered_df.columns and 'PG Sem II Aggregate %' in filtered_df.columns:
-                fig = create_positive_scatter(filtered_df, 'PG Sem 1 Aggregate %', 'PG Sem II Aggregate %', "")
-                st.pyplot(fig)
-            else:
-                st.warning("PG Semester data not available")
-            st.markdown('</div>', unsafe_allow_html=True)
-
+        # Removed the PG Semester Performance plot and kept only the Performance by Program plot
         with st.container():
             st.markdown('<div class="plot-container"><h3>Performance by Program</h3>', unsafe_allow_html=True)
             fig, ax = plt.subplots(figsize=(6, 4))
