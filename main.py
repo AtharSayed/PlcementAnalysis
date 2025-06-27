@@ -14,13 +14,15 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Enhanced color palette
+# Enhanced color palette with better contrast
 primary_color = "#2563eb"       # Blue-600
 secondary_color = "#10b981"     # Emerald-500
 accent_color = "#ef4444"        # Red-500
 highlight_color = "#a855f7"     # Violet-500
 background_color = "#f9fafb"    # Gray-50
-text_color = "#111827"          # Gray-900
+text_color = "#111827"          # Gray-900 (darker for better contrast)
+card_background = "#ffffff"     # Pure white for cards
+border_color = "#e5e7eb"        # Light gray for borders
 
 # Apply custom styling
 def apply_custom_style():
@@ -33,7 +35,7 @@ def apply_custom_style():
 
         .title-text {{
             text-align: center;
-            color: {text_color};
+            color: {text_color} !important;
             margin-bottom: 0.5rem;
             font-size: 2.5rem;
             font-weight: 700;
@@ -41,18 +43,18 @@ def apply_custom_style():
 
         .subtitle-text {{
             text-align: center;
-            color: #4b5563;
+            color: #4b5563 !important;
             margin-bottom: 2rem;
             font-size: 1.2rem;
         }}
 
         .metric-card {{
-            background-color: #ffffff;
+            background-color: {card_background};
             border-radius: 12px;
             padding: 1rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             text-align: center;
-            border: 1px solid #e5e7eb;
+            border: 1px solid {border_color};
             transition: transform 0.2s;
         }}
 
@@ -63,7 +65,7 @@ def apply_custom_style():
 
         .metric-card h3 {{
             font-size: 1rem;
-            color: {text_color};
+            color: {text_color} !important;
             margin-bottom: 0.5rem;
         }}
 
@@ -71,27 +73,28 @@ def apply_custom_style():
             font-size: 24px;
             font-weight: 600;
             margin-bottom: 0;
+            color: {text_color} !important;
         }}
 
         .plot-container {{
-            background-color: #ffffff;
+            background-color: {card_background};
             border-radius: 12px;
             padding: 1rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             margin-bottom: 1.5rem;
-            border: 1px solid #e5e7eb;
+            border: 1px solid {border_color};
             height: 100%;
         }}
 
         .plot-container h3 {{
-            color: {text_color};
+            color: {text_color} !important;
             margin-top: 0;
             padding-bottom: 0.5rem;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid {border_color};
         }}
 
         div[data-baseweb="tab-list"] button[data-baseweb="tab"] {{
-            color: {text_color};
+            color: {text_color} !important;
             font-weight: 500;
             padding: 8px 16px;
         }}
@@ -100,6 +103,16 @@ def apply_custom_style():
             background-color: {primary_color};
             color: white !important;
             border-radius: 8px;
+        }}
+        
+        /* Ensure all text in Streamlit components is visible */
+        .stMarkdown, .stHeader, .stSubheader, .stText {{
+            color: {text_color} !important;
+        }}
+        
+        /* Plot text colors */
+        .css-1v0mbdj {{
+            color: {text_color} !important;
         }}
     </style>
     """, unsafe_allow_html=True)
@@ -180,7 +193,7 @@ def create_positive_histogram(data, column, title, color=primary_color, min_valu
     mean_val = data[column].mean()
     ax.axvline(mean_val, color=accent_color, linestyle='--', linewidth=1.5)
     ax.text(mean_val*1.01, ax.get_ylim()[1]*0.9, f'Mean: {mean_val:.2f}', 
-            color=accent_color, fontsize=10)
+            color=text_color, fontsize=10)
     
     plt.tight_layout()
     return fig
@@ -249,164 +262,156 @@ def main():
         st.error("Failed to load data. Please check the data files and try again.")
         return
 
-    # Simplified filters (only essential ones)
     st.sidebar.header("🔍 Quick Filters")
     program_filter = st.sidebar.multiselect("Program", ['AI', 'DS'], default=['AI', 'DS'])
-    
-    # Apply default filters to show only positive performance
     filtered_df = combined_df.copy()
     if program_filter:
         filtered_df = filtered_df[filtered_df['Program'].isin(program_filter)]
 
-    # Set dynamic title based on program filter
     dashboard_title = get_dashboard_title(program_filter)
     st.markdown(f"<h1 class='title-text'>{dashboard_title}</h1>", unsafe_allow_html=True)
 
-    # Key Metrics - Only positive metrics
     st.markdown("### 📌 Performance Highlights")
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.markdown(f'<div class="metric-card"><h3>👨‍🎓 Total Candidates</h3><p style="font-size:24px;color:{primary_color};">{len(filtered_df)}</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><h3>👨‍🎓 Total Candidates</h3><p>{len(filtered_df)}</p></div>', unsafe_allow_html=True)
     with col2:
         avg_cgpa = filtered_df['CGPA'].mean()
-        st.markdown(f'<div class="metric-card"><h3>📈 Avg. CGPA</h3><p style="font-size:24px;color:{secondary_color};">{f"{avg_cgpa:.2f}" if not pd.isna(avg_cgpa) else "N/A"}</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><h3>📈 Avg. CGPA</h3><p>{f"{avg_cgpa:.2f}" if not pd.isna(avg_cgpa) else "N/A"}</p></div>', unsafe_allow_html=True)
     with col3:
         internship_col = next((col for col in filtered_df.columns if 'Internship' in col), None)
         internship_perc = (filtered_df[internship_col].str.upper() == 'YES').mean() * 100 if internship_col else 0
-        st.markdown(f'<div class="metric-card"><h3>🎯 Internship %</h3><p style="font-size:24px;color:{accent_color};">{f"{internship_perc:.1f}%"}</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><h3>🎯 Internship %</h3><p>{f"{internship_perc:.1f}%"}</p></div>', unsafe_allow_html=True)
     with col4:
         ft_col = next((col for col in filtered_df.columns if 'Full Time' in col), None)
         ft_perc = (filtered_df[ft_col].str.upper() == 'YES').mean() * 100 if ft_col else 0
-        st.markdown(f'<div class="metric-card"><h3>💼 FT Experience %</h3><p style="font-size:24px;color:#9b59b6;">{f"{ft_perc:.1f}%"}</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><h3>💼 FT Experience %</h3><p>{f"{ft_perc:.1f}%"}</p></div>', unsafe_allow_html=True)
 
-    # Main tabs - Only two as requested
-    tab1, tab2 = st.tabs(["📚 Academic Profile", "💼 Experience Details"])
+    # SINGLE TAB: Academic Profile + Experience
+    st.markdown("### <span style='color:black'>📚 Academic Profile</span>", unsafe_allow_html=True)
 
-    with tab1:
-        st.markdown("### Academic Performance Overview")
-        
-        col1, col2 = st.columns(2)
-        with col1:
+    col1, col2 = st.columns(2)
+    with col1:
+        with st.container():
+            st.markdown('<div class="plot-container"><h3>CGPA Distribution (≥6.0)</h3>', unsafe_allow_html=True)
+            fig = create_positive_histogram(filtered_df, 'CGPA', "", min_value=6.0)
+            st.pyplot(fig)
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        with st.container():
+            st.markdown('<div class="plot-container"><h3>Top 5 UG Streams</h3>', unsafe_allow_html=True)
+            if 'UG Stream' in filtered_df:
+                fig = create_positive_barplot(filtered_df, None, 'UG Stream', "", top_n=5)
+                st.pyplot(fig)
+            else:
+                st.warning("UG Stream data not available")
+            st.markdown('</div>', unsafe_allow_html=True)
+
+    with col2:
+        with st.container():
+            st.markdown('<div class="plot-container"><h3>PG Semester Performance</h3>', unsafe_allow_html=True)
+            if 'PG Sem 1 Aggregate %' in filtered_df.columns and 'PG Sem II Aggregate %' in filtered_df.columns:
+                fig = create_positive_scatter(filtered_df, 'PG Sem 1 Aggregate %', 'PG Sem II Aggregate %', "")
+                st.pyplot(fig)
+            else:
+                st.warning("PG Semester data not available")
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        with st.container():
+            st.markdown('<div class="plot-container"><h3>Performance by Program</h3>', unsafe_allow_html=True)
+            fig, ax = plt.subplots(figsize=(6, 4))
+            sns.boxplot(x='Program', y='CGPA', data=filtered_df, ax=ax, 
+                       palette=[primary_color, secondary_color])
+            ax.set_xlabel("Program", color=text_color)
+            ax.set_ylabel("CGPA", color=text_color)
+            ax.tick_params(colors=text_color)
+            ax.spines['bottom'].set_color(text_color)
+            ax.spines['left'].set_color(text_color)
+            plt.tight_layout()
+            st.pyplot(fig)
+            st.markdown('</div>', unsafe_allow_html=True)
+
+    # EXPERIENCE INSIGHTS under academic
+    st.markdown("### <span style='color:black'>💼 Professional Experience Insights</span>", unsafe_allow_html=True)
+
+    cols = st.columns(2)
+    if internship_col and internship_col in filtered_df:
+        intern_df = filtered_df[filtered_df[internship_col].str.upper() == 'YES']
+        with cols[0]:
             with st.container():
-                st.markdown('<div class="plot-container"><h3>CGPA Distribution (≥6.0)</h3>', unsafe_allow_html=True)
-                fig = create_positive_histogram(filtered_df, 'CGPA', "", min_value=6.0)
+                st.markdown('<div class="plot-container"><h3>Internship Participation</h3>', unsafe_allow_html=True)
+                fig = create_donut_chart(filtered_df, internship_col, "", colors=[secondary_color, '#e5e7eb'])
                 st.pyplot(fig)
                 st.markdown('</div>', unsafe_allow_html=True)
-            
+
             with st.container():
-                st.markdown('<div class="plot-container"><h3>Top 5 UG Streams</h3>', unsafe_allow_html=True)
-                if 'UG Stream' in filtered_df:
-                    fig = create_positive_barplot(filtered_df, None, 'UG Stream', "", top_n=5)
+                st.markdown('<div class="plot-container"><h3>Top Internship Roles</h3>', unsafe_allow_html=True)
+                if 'Internship Role' in intern_df.columns:
+                    fig = create_positive_barplot(intern_df, None, 'Internship Role', "", palette="Greens_r")
                     st.pyplot(fig)
                 else:
-                    st.warning("UG Stream data not available")
+                    st.warning("Internship role data not available")
                 st.markdown('</div>', unsafe_allow_html=True)
 
-        with col2:
+    if ft_col and ft_col in filtered_df:
+        ft_df = filtered_df[filtered_df[ft_col].str.upper() == 'YES']
+        with cols[1]:
             with st.container():
-                st.markdown('<div class="plot-container"><h3>PG Semester Performance</h3>', unsafe_allow_html=True)
-                if 'PG Sem 1 Aggregate %' in filtered_df.columns and 'PG Sem II Aggregate %' in filtered_df.columns:
-                    fig = create_positive_scatter(filtered_df, 'PG Sem 1 Aggregate %', 'PG Sem II Aggregate %', "")
+                st.markdown('<div class="plot-container"><h3>Full-time Experience</h3>', unsafe_allow_html=True)
+                fig = create_donut_chart(filtered_df, ft_col, "", colors=[primary_color, '#e5e7eb'])
+                st.pyplot(fig)
+                st.markdown('</div>', unsafe_allow_html=True)
+
+            with st.container():
+                st.markdown('<div class="plot-container"><h3>Top Full-Time Roles</h3>', unsafe_allow_html=True)
+                if 'Full Time Role' in ft_df.columns:
+                    fig = create_positive_barplot(ft_df, None, 'Full Time Role', "", palette="Blues_r")
                     st.pyplot(fig)
                 else:
-                    st.warning("PG Semester data not available")
+                    st.warning("Full-time role data not available")
                 st.markdown('</div>', unsafe_allow_html=True)
-            
-            with st.container():
-                st.markdown('<div class="plot-container"><h3>Performance by Program</h3>', unsafe_allow_html=True)
+    
+    # Correlation insights
+    st.markdown("### <span style='color:black'>🔄 Experience vs Academics</span>", unsafe_allow_html=True)
+
+    col3, col4 = st.columns(2)
+    with col3:
+        with st.container():
+            st.markdown('<div class="plot-container"><h3>CGPA vs Internship Status</h3>', unsafe_allow_html=True)
+            if internship_col and 'CGPA' in filtered_df:
                 fig, ax = plt.subplots(figsize=(6, 4))
-                sns.boxplot(x='Program', y='CGPA', data=filtered_df, ax=ax, 
-                           palette=[primary_color, secondary_color])
-                ax.set_xlabel("Program", color=text_color)
+                sns.boxplot(x=internship_col, y='CGPA', data=filtered_df, 
+                           ax=ax, palette=[secondary_color, '#e5e7eb'])
+                ax.set_xlabel("Internship Status", color=text_color)
                 ax.set_ylabel("CGPA", color=text_color)
                 ax.tick_params(colors=text_color)
                 ax.spines['bottom'].set_color(text_color)
                 ax.spines['left'].set_color(text_color)
                 plt.tight_layout()
                 st.pyplot(fig)
-                st.markdown('</div>', unsafe_allow_html=True)
+            else:
+                st.warning("Required data not available")
+            st.markdown('</div>', unsafe_allow_html=True)
 
-    with tab2:
-        st.markdown("### Professional Experience Insights")
-        
-        cols = st.columns(2)
-        if internship_col and internship_col in filtered_df:
-            intern_df = filtered_df[filtered_df[internship_col].str.upper() == 'YES']
-            with cols[0]:
-                with st.container():
-                    st.markdown('<div class="plot-container"><h3>Internship Participation</h3>', unsafe_allow_html=True)
-                    fig = create_donut_chart(filtered_df, internship_col, "", 
-                                          colors=[secondary_color, '#e5e7eb'])  # Gray for "NO"
-                    st.pyplot(fig)
-                    st.markdown('</div>', unsafe_allow_html=True)
-                
-                with st.container():
-                    st.markdown('<div class="plot-container"><h3>Top Internship Roles</h3>', unsafe_allow_html=True)
-                    if 'Internship Role' in intern_df.columns:
-                        fig = create_positive_barplot(intern_df, None, 'Internship Role', "", palette="Greens_r")
-                        st.pyplot(fig)
-                    else:
-                        st.warning("Internship role data not available")
-                    st.markdown('</div>', unsafe_allow_html=True)
-        
-        if ft_col and ft_col in filtered_df:
-            ft_df = filtered_df[filtered_df[ft_col].str.upper() == 'YES']
-            with cols[1]:
-                with st.container():
-                    st.markdown('<div class="plot-container"><h3>Full-time Experience</h3>', unsafe_allow_html=True)
-                    fig = create_donut_chart(filtered_df, ft_col, "", 
-                                          colors=[primary_color, '#e5e7eb'])  # Gray for "NO"
-                    st.pyplot(fig)
-                    st.markdown('</div>', unsafe_allow_html=True)
-                
-                with st.container():
-                    st.markdown('<div class="plot-container"><h3>Top Full-Time Roles</h3>', unsafe_allow_html=True)
-                    if 'Full Time Role' in ft_df.columns:
-                        fig = create_positive_barplot(ft_df, None, 'Full Time Role', "", palette="Blues_r")
-                        st.pyplot(fig)
-                    else:
-                        st.warning("Full-time role data not available")
-                    st.markdown('</div>', unsafe_allow_html=True)
-        
-        # Additional professional insights
-        st.markdown("### Experience Correlation with Academics")
-        col3, col4 = st.columns(2)
-        with col3:
-            with st.container():
-                st.markdown('<div class="plot-container"><h3>CGPA vs Internship Status</h3>', unsafe_allow_html=True)
-                if internship_col and 'CGPA' in filtered_df:
-                    fig, ax = plt.subplots(figsize=(6, 4))
-                    sns.boxplot(x=internship_col, y='CGPA', data=filtered_df, 
-                               ax=ax, palette=[secondary_color, '#e5e7eb'])  # Gray for "NO"
-                    ax.set_xlabel("Internship Status", color=text_color)
-                    ax.set_ylabel("CGPA", color=text_color)
-                    ax.tick_params(colors=text_color)
-                    ax.spines['bottom'].set_color(text_color)
-                    ax.spines['left'].set_color(text_color)
-                    plt.tight_layout()
-                    st.pyplot(fig)
-                else:
-                    st.warning("Required data not available")
-                st.markdown('</div>', unsafe_allow_html=True)
-        
-        with col4:
-            with st.container():
-                st.markdown('<div class="plot-container"><h3>Experience by Program</h3>', unsafe_allow_html=True)
-                if internship_col and 'Program' in filtered_df:
-                    fig, ax = plt.subplots(figsize=(6, 4))
-                    sns.countplot(x='Program', hue=internship_col, data=filtered_df,
-                                 ax=ax, palette=[secondary_color, '#e5e7eb'])
-                    ax.set_xlabel("Program", color=text_color)
-                    ax.set_ylabel("Count", color=text_color)
-                    ax.tick_params(colors=text_color)
-                    ax.spines['bottom'].set_color(text_color)
-                    ax.spines['left'].set_color(text_color)
-                    ax.legend(title="Internship", bbox_to_anchor=(1.05, 1), loc='upper left')
-                    plt.tight_layout()
-                    st.pyplot(fig)
-                else:
-                    st.warning("Required data not available")
-                st.markdown('</div>', unsafe_allow_html=True)
+    with col4:
+        with st.container():
+            st.markdown('<div class="plot-container"><h3>Experience by Program</h3>', unsafe_allow_html=True)
+            if internship_col and 'Program' in filtered_df:
+                fig, ax = plt.subplots(figsize=(6, 4))
+                sns.countplot(x='Program', hue=internship_col, data=filtered_df,
+                             ax=ax, palette=[secondary_color, '#e5e7eb'])
+                ax.set_xlabel("Program", color=text_color)
+                ax.set_ylabel("Count", color=text_color)
+                ax.tick_params(colors=text_color)
+                ax.spines['bottom'].set_color(text_color)
+                ax.spines['left'].set_color(text_color)
+                ax.legend(title="Internship", bbox_to_anchor=(1.05, 1), loc='upper left')
+                plt.tight_layout()
+                st.pyplot(fig)
+            else:
+                st.warning("Required data not available")
+            st.markdown('</div>', unsafe_allow_html=True)
+
 
 if __name__ == '__main__':
     main()
