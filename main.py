@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 from pathlib import Path
+from matplotlib.ticker import MaxNLocator
 
 # Set page config
 st.set_page_config(
@@ -150,10 +151,12 @@ def load_data():
                 'Female': 'FEMALE'
             })
 
-        # Remove outliers and focus on positive performance
+        if 'UG Stream' in combined_df.columns:
+            combined_df['UG Stream'] = combined_df['UG Stream'].str.strip().str.title()
+
         if 'CGPA' in combined_df.columns:
-            combined_df = combined_df[combined_df['CGPA'] >= 6.0]  # Only show students with CGPA >= 6.0
-        
+            combined_df = combined_df[combined_df['CGPA'] >= 6.0]
+
         return combined_df
 
     except Exception as e:
@@ -196,15 +199,17 @@ def create_donut_chart(data, column, title, colors=None):
     return fig
 
 def create_positive_barplot(data, x_col, y_col, title, palette="viridis", top_n=5):
-    top_data = data[y_col].value_counts().head(top_n)
+    top_data = data[y_col].value_counts().nlargest(top_n).sort_values(ascending=True)
     fig, ax = plt.subplots(figsize=(6, 4))
-    sns.barplot(y=top_data.index, x=top_data.values, palette=palette, ax=ax)
+    bars = ax.barh(top_data.index, top_data.values, color=sns.color_palette(palette, len(top_data)))
     ax.set_title(title, fontsize=12, pad=10, color=text_color)
     ax.set_xlabel("Count", color=text_color)
     ax.set_ylabel(y_col, color=text_color)
     ax.tick_params(colors=text_color)
     ax.spines['bottom'].set_color(text_color)
     ax.spines['left'].set_color(text_color)
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    ax.bar_label(bars, fmt='%d', padding=3, color=text_color)
     plt.tight_layout()
     return fig
 
