@@ -1,5 +1,5 @@
 # Use a slim version of Python as the base image
-FROM python:3.10-slim-buster
+FROM python:3.10-slim-bullseye
 
 # Set the working directory in the container
 WORKDIR /app
@@ -13,7 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Install system dependencies for matplotlib/Seaborn and other libraries
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    libgl1-mesa-glx \
+    libgl1 \
     libgirepository1.0-dev \
     libcairo2 \
     libpango-1.0-0 \
