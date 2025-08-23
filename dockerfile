@@ -1,30 +1,29 @@
-# Use lighter-weight Python 3.10 image
-FROM python:3.10-slim
+# Use a slim version of Python as the base image
+FROM python:3.10-slim-buster
 
+# Set the working directory in the container
 WORKDIR /app
 
-# Install system dependencies for matplotlib/Seaborn
+# Copy the requirements file into the container
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install system dependencies for matplotlib/Seaborn and other libraries
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     libgl1-mesa-glx \
+    libgirepository1.0-dev \
+    libcairo2 \
+    libpango-1.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for caching
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy all files (except those in .dockerignore)
+# Copy the entire project directory into the container
 COPY . .
 
-# Ensure data files are accessible
-RUN chmod a+r data/*.csv
+# Expose the port Streamlit runs on
+EXPOSE 8501
 
-# Health check endpoint
-HEALTHCHECK --interval=30s --timeout=5s \
-    CMD curl -f http://localhost:8501/_stcore/health || exit 1
-
-# Run Streamlit
-ENTRYPOINT ["streamlit", "run", "main.py", \
-    "--server.port=8501", \
-    "--server.address=0.0.0.0", \
-    "--server.headless=true"]
+# Command to run the Streamlit application
+CMD ["streamlit", "run", "main.py"]
