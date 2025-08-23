@@ -390,8 +390,7 @@ def main():
             st.markdown('<div class="plot-container"><h3>Experience by Program</h3>', unsafe_allow_html=True)
             if internship_col and 'Program' in filtered_df:
                 fig, ax = plt.subplots(figsize=(6, 4))
-                sns.countplot(x='Program', hue=internship_col, data=filtered_df,
-                             ax=ax, palette=[secondary_color, '#e5e7eb'])
+                sns.countplot(x='Program', hue=internship_col, data=filtered_df,ax=ax, palette=[secondary_color, '#e5e7eb'])
                 ax.set_xlabel("Program", color=text_color)
                 ax.set_ylabel("Count", color=text_color)
                 ax.tick_params(colors=text_color)
