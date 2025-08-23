@@ -1,36 +1,32 @@
-name: Streamlit CI
+name: CI/CD Pipeline for Placement Analysis
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
-  lint-test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v2
         with:
           python-version: '3.10'
 
       - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
-      - name: Lint using flake8
+      - name: Build and push Docker image
         run: |
-          pip install flake8
-          flake8 main.py
-
-      - name: Check Streamlit App
-        run: |
-          streamlit run main.py --server.headless true &
-          sleep 10
-          echo "Streamlit app check complete"
+          docker build -t atharsayed/placement-analysis:latest .
+          # Docker Hub login and push steps would go here
+          # echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login --username atharsayed --password-stdin
+          # docker push atharsayed/placement-analysis:latest

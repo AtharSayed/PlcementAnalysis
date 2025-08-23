@@ -13,6 +13,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+
 # Enhanced color palette with better contrast
 primary_color = "#2563eb"       # Blue-600
 secondary_color = "#10b981"     # Emerald-500
@@ -23,6 +24,7 @@ text_color = "#111827"          # Gray-900 (darker for better contrast)
 card_background = "#ffffff"     # Pure white for cards
 border_color = "#e5e7eb"        # Light gray for borders
 
+
 # Apply custom styling
 def apply_custom_style():
     st.markdown(f"""
@@ -31,7 +33,6 @@ def apply_custom_style():
             background-color: {background_color} !important;
             color: {text_color};
         }}
-
         .title-text {{
             text-align: center;
             color: {text_color} !important;
@@ -39,14 +40,12 @@ def apply_custom_style():
             font-size: 2.5rem;
             font-weight: 700;
         }}
-
         .subtitle-text {{
             text-align: center;
             color: #4b5563 !important;
             margin-bottom: 2rem;
             font-size: 1.2rem;
         }}
-
         .metric-card {{
             background-color: {card_background};
             border-radius: 12px;
@@ -56,25 +55,21 @@ def apply_custom_style():
             border: 1px solid {border_color};
             transition: transform 0.2s;
         }}
-
         .metric-card:hover {{
             transform: translateY(-5px);
             box-shadow: 0 6px 12px rgba(0,0,0,0.1);
         }}
-
         .metric-card h3 {{
             font-size: 1rem;
             color: {text_color} !important;
             margin-bottom: 0.5rem;
         }}
-
         .metric-card p {{
             font-size: 24px;
             font-weight: 600;
             margin-bottom: 0;
             color: {text_color} !important;
         }}
-
         .plot-container {{
             background-color: {card_background};
             border-radius: 12px;
@@ -84,31 +79,26 @@ def apply_custom_style():
             border: 1px solid {border_color};
             height: 100%;
         }}
-
         .plot-container h3 {{
             color: {text_color} !important;
             margin-top: 0;
             padding-bottom: 0.5rem;
             border-bottom: 1px solid {border_color};
         }}
-
         div[data-baseweb="tab-list"] button[data-baseweb="tab"] {{
             color: {text_color} !important;
             font-weight: 500;
             padding: 8px 16px;
         }}
-
         div[data-baseweb="tab-list"] button[aria-selected="true"] {{
             background-color: {primary_color};
             color: white !important;
             border-radius: 8px;
         }}
-        
         /* Ensure all text in Streamlit components is visible */
         .stMarkdown, .stHeader, .stSubheader, .stText {{
             color: {text_color} !important;
         }}
-        
         /* Plot text colors */
         .css-1v0mbdj {{
             color: {text_color} !important;
@@ -147,12 +137,11 @@ def load_data():
         combined_df = pd.concat([ai_df, ds_df], ignore_index=True)
 
         yes_no_cols = [col for col in combined_df.columns
-                       if any(x in col for x in ['Yes/No', 'Status',
-                                                  'Experience'])]
+                       if any(x in col for x in ['Yes/No', 'Status', 'Experience'])]
         for col in yes_no_cols:
             if col in combined_df.columns:
                 combined_df[col] = combined_df[col].str.upper().str.strip().\
-                                   fillna('NO')
+                    fillna('NO')
 
         numeric_cols = ['X Percentage', 'XII Percentage', 'UG Aggregate %',
                         'PG Sem 1 Aggregate %', 'PG Sem II Aggregate %',
@@ -164,7 +153,7 @@ def load_data():
 
         if 'Gender' in combined_df.columns:
             combined_df['Gender'] = combined_df['Gender'].str.upper().\
-                                    str.strip()
+                str.strip()
             combined_df['Gender'] = combined_df['Gender'].replace({
                 'MALE': 'MALE',
                 'FEMALE': 'FEMALE',
@@ -174,7 +163,7 @@ def load_data():
 
         if 'UG Stream' in combined_df.columns:
             combined_df['UG Stream'] = combined_df['UG Stream'].str.strip().\
-                                       str.title()
+                str.title()
 
         if 'CGPA' in combined_df.columns:
             combined_df = combined_df[combined_df['CGPA'] >= 6.0]
@@ -229,7 +218,7 @@ def create_donut_chart(data, column, title, colors=None):
 def create_positive_barplot(data, x_col, y_col, title, palette="viridis",
                             top_n=5):
     top_data = data[y_col].value_counts().nlargest(top_n).\
-               sort_values(ascending=True)
+        sort_values(ascending=True)
     fig, ax = plt.subplots(figsize=(6, 4))
     bars = ax.barh(top_data.index, top_data.values,
                    color=sns.color_palette(palette, len(top_data)))
@@ -291,7 +280,7 @@ def main():
     filtered_df = combined_df.copy()
     if program_filter:
         filtered_df = filtered_df[filtered_df['Program'].isin(
-                                 program_filter)]
+            program_filter)]
 
     dashboard_title = get_dashboard_title(program_filter)
     st.markdown(f"<h1 class='title-text'>{dashboard_title}</h1>",
@@ -310,7 +299,7 @@ def main():
                     f'</p></div>', unsafe_allow_html=True)
     with col3:
         internship_col = next((col for col in filtered_df.columns
-                              if 'Internship' in col), None)
+                               if 'Internship' in col), None)
         internship_perc = (filtered_df[internship_col].str.upper() ==
                            'YES').mean() * 100 if internship_col else 0
         st.markdown(f'<div class="metric-card"><h3>🎯 Internship %</h3><p>'
@@ -318,9 +307,9 @@ def main():
                     unsafe_allow_html=True)
     with col4:
         ft_col = next((col for col in filtered_df.columns
-                      if 'Full Time' in col), None)
-        ft_perc = (filtered_df[ft_col].str.upper() == 'YES').mean() *\
-                  100 if ft_col else 0
+                       if 'Full Time' in col), None)
+        ft_perc = (filtered_df[ft_col].str.upper() == 'YES').mean() * \
+            100 if ft_col else 0
         st.markdown(f'<div class="metric-card"><h3>💼 FT Experience %</h3><p>'
                     f'{f"{ft_perc:.1f}%"}</p></div>',
                     unsafe_allow_html=True)
@@ -374,8 +363,9 @@ def main():
 
     cols = st.columns(2)
     if internship_col and internship_col in filtered_df:
-        intern_df = filtered_df[filtered_df[internship_col].str.upper() ==
-                                'YES']
+        intern_df = filtered_df[
+            filtered_df[internship_col].str.upper() == 'YES'
+        ]
         with cols[0]:
             with st.container():
                 st.markdown('<div class="plot-container"><h3>Internship '
