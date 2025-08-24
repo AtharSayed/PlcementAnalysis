@@ -1,9 +1,10 @@
-
 # M.Tech Talent Dashboard
 
 This repository contains the source code for an interactive data analytics dashboard built with Streamlit, designed to visualize student placement data for the M.Tech program at MPSTME. The dashboard provides key insights into academic performance, professional experience, and their correlation, helping to streamline the placement process and identify key trends.
 
 The project is built with a focus on modern software development practices, including a robust CI/CD pipeline and Dockerization for a reproducible and reliable deployment process.
+
+![Dashboard Preview](images/Dashboard_image.png)
 
 -----
 
