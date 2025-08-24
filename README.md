@@ -1,3 +1,4 @@
+
 # M.Tech Talent Dashboard
 
 This repository contains the source code for an interactive data analytics dashboard built with Streamlit, designed to visualize student placement data for the M.Tech program at MPSTME. The dashboard provides key insights into academic performance, professional experience, and their correlation, helping to streamline the placement process and identify key trends.
@@ -31,20 +32,15 @@ The project is built with a focus on modern software development practices, incl
 To run this application on your local machine, you only need to have [Docker](https://www.docker.com/get-started/) installed. The project's `Dockerfile` handles all other dependencies.
 
 1.  **Clone the Repository**:
-
     ```bash
-    git clone [https://github.com/AtharSayed/PlcementAnalysis.git](https://github.com/AtharSayed/PlcementAnalysis.git)
+    git clone https://github.com/AtharSayed/PlcementAnalysis.git
     cd PlcmentAnalysis
     ```
-
 2.  **Build the Docker Image**:
-
     ```bash
     docker build -t placement-analysis .
     ```
-
 3.  **Run the Docker Container**:
-
     ```bash
     docker run -p 8501:8501 placement-analysis
     ```
