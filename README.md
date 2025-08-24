@@ -33,7 +33,7 @@ To run this application on your local machine, you only need to have [Docker](ht
 1.  **Clone the Repository**:
 
     ```bash
-    git clone https://github.com/AtharSayed/PlcementAnalysis.git
+    git clone [https://github.com/AtharSayed/PlcementAnalysis.git](https://github.com/AtharSayed/PlcementAnalysis.git)
     cd PlcmentAnalysis
     ```
 
